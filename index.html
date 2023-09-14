@@ -52,7 +52,7 @@
       <div id="auth-container">
         <details class="no-margin-bottom">
           <summary>Токен аутентификации (<a style="color: --primary">как его получить?</a>)</summary>
-          <p>1. Открываем <a href="https://my.itmo.ru">my.itmo.ru</a>, нажимаем F12, в появившемся меню находим панель Console (или Консоль), вводим туда:</p>
+          <p>1. Открываем <a href="https://my.itmo.ru" target="_blank" rel="noopener noreferrer">my.itmo.ru</a>, нажимаем F12, в появившемся меню находим панель Console (или Консоль), вводим туда:</p>
           <p><code>decodeURI(document.cookie.split('auth._token.itmoId=')[1].split(';')[0])</code></p>
           <p><strong>Пока вы запускаете скрипт, токен может истечь (будет ошибка "Токен недействителен")</strong> — нужно будет обновить страницу и получить его заново.</p>
           <p>2. Нажимаем Enter и получаем токен, который вставляем в поле ниже.</p>
@@ -64,7 +64,7 @@
         <details class="no-margin-bottom">
           <summary>JSON расписания (<a style="color: --primary">как его получить?</a>)</summary>
           <p>1. Выбираем даты в полях ниже</p>
-          <p>2. Открываем <a href="https://my.itmo.ru">my.itmo.ru</a>, нажимаем F12, в появившемся меню находим панель Console (или Консоль), вводим туда:</p>
+          <p>2. Открываем <a href="https://my.itmo.ru" target="_blank" rel="noopener noreferrer">my.itmo.ru</a>, нажимаем F12, в появившемся меню находим панель Console (или Консоль), вводим туда:</p>
           <p><code>decodeURI(document.cookie.split('auth._token.itmoId=')[1].split(';')[0])</code></p>
           <p><strong>Пока вы запускаете скрипт, токен может истечь (будет ошибка "Токен недействителен")</strong> — нужно будет обновить страницу и получить его заново.</p>
           <p>3. Нажимаем Enter и получаем токен, который вставляем вместо <a>TOKEN</a> в команду ниже (команда для UNIX-подобных операционных систем):</p>
@@ -118,15 +118,15 @@
         <div id="multiple-import" hidden>
           <p><strong>Следующие шаги:</strong></p>
           <p>1. Разрешите скачивание нескольких файлов, если вас об этом попросит браузер.</p>
-          <p>2. Скачаются файлы <code>lectures.ics</code>, <code>practices.ics</code>, <code>labs.ics</code>, <code>sport.ics</code> и <code>other.ics</code>. Могут скачаться не все, например, если нет спорта в расписании, то календаря sport.ics не будет.</p>
-          <p>3. Посетите <a href="https://calendar.google.com/calendar/u/0/r/settings/createcalendar">calendar.google.com/calendar/u/0/r/settings/createcalendar</a> и создайте по календарю на каждый тип, выберите название и цвет.</p>
-          <p>4. Посетите <a href="https://calendar.google.com/calendar/u/0/r/settings/export">calendar.google.com/calendar/u/0/r/settings/export</a> и импортируйте файлы в соответствующие календари.</p>
+          <p>2. Скачаются файлы <code>lectures.ics</code>, <code>practices.ics</code>, <code>labs.ics</code>, <code>sport.ics</code> и <code>other.ics</code>. Могут скачаться не все, например, если нет спорта в расписании, то календаря <code>sport.ics</code> не будет.</p>
+          <p>3. Посетите <a href="https://calendar.google.com/calendar/u/0/r/settings/createcalendar" target="_blank" rel="noopener noreferrer">calendar.google.com/calendar/u/0/r/settings/createcalendar</a> и создайте по календарю на каждый тип, выберите название и цвет.</p>
+          <p>4. Посетите <a href="https://calendar.google.com/calendar/u/0/r/settings/export" target="_blank" rel="noopener noreferrer">calendar.google.com/calendar/u/0/r/settings/export</a> и импортируйте файлы в соответствующие календари.</p>
         </div>
         <div id="single-import">
           <p><strong>Следующие шаги:</strong></p>
           <p>1. Скачается файл <code>schedule.ics</code>, найдите его в проводнике.</p>
-          <p>2. Посетите <a href="https://calendar.google.com/calendar/u/0/r/settings/createcalendar">calendar.google.com/calendar/u/0/r/settings/createcalendar</a> и создайте календарь для расписания, выберите название и цвет.</p>
-          <p>3. Посетите <a href="https://calendar.google.com/calendar/u/0/r/settings/export">calendar.google.com/calendar/u/0/r/settings/export</a> и импортируйте файл в соответствующий календарь.</p>
+          <p>2. Посетите <a href="https://calendar.google.com/calendar/u/0/r/settings/createcalendar" target="_blank" rel="noopener noreferrer">calendar.google.com/calendar/u/0/r/settings/createcalendar</a> и создайте календарь для расписания, выберите название и цвет.</p>
+          <p>3. Посетите <a href="https://calendar.google.com/calendar/u/0/r/settings/export" target="_blank" rel="noopener noreferrer">calendar.google.com/calendar/u/0/r/settings/export</a> и импортируйте файл в соответствующий календарь.</p>
         </div>
       </div>
       <p id="error-text" style="color: #ed2257" hidden></p>
