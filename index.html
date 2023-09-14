@@ -52,7 +52,7 @@
       <div id="auth-container">
         <details class="no-margin-bottom">
           <summary>Токен аутентификации (<a style="color: --primary">как его получить?</a>)</summary>
-          <p>1. Открываем <a href="https://my.itmo.ru" target="_blank" rel="noopener noreferrer">my.itmo.ru</a>, нажимаем F12, в появившемся меню находим панель Console (или Консоль), вводим туда:</p>
+          <p>1. Открываем <a href="https://my.itmo.ru" target="_blank" rel="noopener noreferrer">my.itmo.ru</a>, нажимаем F12 (или Fn+F12 на ноутбуках), в появившемся меню находим панель Console (или Консоль), вводим туда:</p>
           <p><code>decodeURI(document.cookie.split('auth._token.itmoId=')[1].split(';')[0])</code></p>
           <p><strong>Пока вы запускаете скрипт, токен может истечь (будет ошибка "Токен недействителен")</strong> — нужно будет обновить страницу и получить его заново.</p>
           <p>2. Нажимаем Enter и получаем токен, который вставляем в поле ниже.</p>
