@@ -299,8 +299,14 @@
           fetchSchedule().then(data => {getCal(data)});
             
         } else if (currentMethod == "json") {
-          var jsonData = document.getElementById("jsonarea").value;
-          getCal(JSON.parse(jsonData));
+          try {
+            var jsonData = JSON.parse(document.getElementById("jsonarea").value);
+            getCal(jsonData);
+          } catch (error) {
+            onFailure();
+            document.getElementById('error-text').innerHTML = error.message;
+            document.getElementById('error-text').hidden = false;
+          }
         }
       }
 
