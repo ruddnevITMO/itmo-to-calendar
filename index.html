@@ -264,7 +264,7 @@
             }
           ); 
           if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`Не получилось связаться с my.itmo.ru! Код ошибки: ${response.status}. Возможно, токен истёк либо был указан неправильно.`);
           }
           const data = response.json();
           return data;
@@ -333,7 +333,9 @@
             if (goodBuilding.includes("null")) {
               lessonLocation = "";
             } else {
-              if (goodBuilding.includes("Ломонос")) {
+              if (goodBuilding.includes("ул.Ломоносова, д.9, лит. А")) {
+                goodBuilding = "Ломо ⛪️";
+              } else if (goodBuilding.includes("Ломонос")) {
                 goodBuilding = "Ломо";
               } else if (goodBuilding.includes("Кронв")) {
                 goodBuilding = "Кронва";
@@ -346,7 +348,7 @@
               } else if (goodBuilding.includes("Чайк")) {
                 goodBuilding = "Чайка";
               } 
-              lessonLocation = lesson.room + ", " + goodBuilding;
+              lessonLocation = lesson.room.replace("ауд. ", "") + ", " + goodBuilding;
             }
 
             var teacherName = lesson.teacher_name;
