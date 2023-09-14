@@ -364,23 +364,23 @@
 
             lesson.type = String(lesson.type);
             if (importType == "single") {
-              cal.addEvent(lesson.subject, description, goodBuilding, start, end);
+              cal.addEvent(lesson.subject, description, lessonLocation, start, end);
             } else if (importType == "multiple") {
               if (lesson.type.includes("Лекции")) {
                 isLectureImported = true;
-                lectures.addEvent(lesson.subject, description, goodBuilding, start, end);
+                lectures.addEvent(lesson.subject, description, lessonLocation, start, end);
               } else if (lesson.type.includes("Практические занятия")) {
                 isPracticeImported = true;
-                practices.addEvent(lesson.subject, description, goodBuilding, start, end);
+                practices.addEvent(lesson.subject, description, lessonLocation, start, end);
               } else if (lesson.type.includes("Лабораторные занятия")) {
                 isLabImported = true;
-                labs.addEvent(lesson.subject, description, goodBuilding, start, end);
+                labs.addEvent(lesson.subject, description, lessonLocation, start, end);
               } else if (lesson.type.includes("Занятия спортом")) {
                 isSportImported = true;
-                sport.addEvent(lesson.subject, description, goodBuilding, start, end);
+                sport.addEvent(lesson.subject, description, lessonLocation, start, end);
               } else {
                 isOtherImported = true;
-                other.addEvent(lesson.subject, description, goodBuilding, start, end);
+                other.addEvent(lesson.subject, description, lessonLocation, start, end);
               } 
             }
           }        
