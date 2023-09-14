@@ -173,12 +173,14 @@
       
 
       function noTrust() {
+        returnToNormal();
         currentMethod = "json";
         authContainer.hidden = true;
         jsonContainer.hidden = false;  
       }
 
       function trust() {
+        returnToNormal();
         currentMethod = "auth";
         authContainer.hidden = false;
         jsonContainer.hidden = true; 
@@ -205,13 +207,16 @@
 
       function handleInputChange(event) {
         if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA' || event.target.tagName === "SELECT") {
-          const inputValue = event.target.value;
-            button.style.backgroundColor = "#1355d2";
-            button.innerHTML = "Старт";
-            button.disabled = false;
-            document.getElementById('error-text').hidden = true;
-            document.getElementById('after-text').hidden = true;
+          returnToNormal()
         }
+      }
+
+      function returnToNormal() {
+        button.style.backgroundColor = "#1355d2";
+        button.innerHTML = "Старт";
+        button.disabled = false;
+        document.getElementById('error-text').hidden = true;
+        document.getElementById('after-text').hidden = true;
       }
 
       var importTypeSelect = document.getElementById("import_type");
