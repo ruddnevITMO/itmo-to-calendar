@@ -97,18 +97,21 @@
         </div>
 
         <div>
-          <input type="date" id="date_start" name="date_start">
+          <input type="date" id="date_start" name="date_start" style="margin-bottom: 0.1rem">
           <label for="date_end">И заканчивая
-            <input type="date" id="date_end" name="date_end" value="2023-12-31" required>
+            <input type="date" id="date_end" name="date_end" value="2023-12-31" style="margin-bottom: 0.1rem" required>
           </label>
         </div>
       </div>
 
       <label for="import_type">Вид результата:
-        <select id="import_type" required>
+        <select id="import_type" style="margin-bottom: 0" required>
           <option value="single" selected>Одним календарем</option>
           <option value="multiple">Отдельными календарями на лек, прак, лаб, физра, экз/зач/конс</option>
         </select>
+      </label>
+      <label for="shorten-address" style="margin-bottom: 1rem">
+        <input type="checkbox" id="shorten-address" name="shorten-address" role="switch" checked> Сокращать адрес (ул.Ломоносова, д.9, лит. Б → Ломо) 
       </label>
         
       <div id="progress-bar" hidden>
@@ -218,6 +221,11 @@
         document.getElementById('error-text').hidden = true;
         document.getElementById('after-text').hidden = true;
       }
+
+      var isShortenAddress = true;
+      document.getElementById('shorten-address').addEventListener('change', (e) => {
+        isShortenAddress = e.target.checked ? true : false;
+      })
 
       var importTypeSelect = document.getElementById("import_type");
       document.addEventListener('input', handleInputChange);
@@ -344,21 +352,23 @@
             if (goodBuilding.includes("null")) {
               lessonLocation = "";
             } else {
-              if (goodBuilding.includes("ул.Ломоносова, д.9, лит. А")) {
-                goodBuilding = "Ломо ⛪️";
-              } else if (goodBuilding.includes("Ломонос")) {
-                goodBuilding = "Ломо";
-              } else if (goodBuilding.includes("Кронв")) {
-                goodBuilding = "Кронва";
-              } else if (goodBuilding.includes("Песоч")) {
-                goodBuilding = "Песочка";
-              } else if (goodBuilding.includes("Гривц")) {
-                goodBuilding = "Грива";
-              } else if (goodBuilding.includes("Бирж")) {
-                goodBuilding = "Биржа";
-              } else if (goodBuilding.includes("Чайк")) {
-                goodBuilding = "Чайка";
-              } 
+              if (isShortenAddress) {
+                if (goodBuilding.includes("ул.Ломоносова, д.9, лит. А")) {
+                  goodBuilding = "Ломо ⛪️";
+                } else if (goodBuilding.includes("Ломонос")) {
+                  goodBuilding = "Ломо";
+                } else if (goodBuilding.includes("Кронв")) {
+                  goodBuilding = "Кронва";
+                } else if (goodBuilding.includes("Песоч")) {
+                  goodBuilding = "Песочка";
+                } else if (goodBuilding.includes("Гривц")) {
+                  goodBuilding = "Грива";
+                } else if (goodBuilding.includes("Бирж")) {
+                  goodBuilding = "Биржа";
+                } else if (goodBuilding.includes("Чайк")) {
+                  goodBuilding = "Чайка";
+                } 
+              }
               lessonLocation = lesson.room.replace("ауд. ", "") + ", " + goodBuilding;
             }
 
