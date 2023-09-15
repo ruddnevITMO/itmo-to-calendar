@@ -418,10 +418,10 @@
         } else if (importType == "multiple") {
           const timeout = 500;
           if (isLectureImported) setTimeout(() => {lectures.download("lectures")}, 100);
-          if (isPracticeImported) setTimeout(() => {practices.download("practices")}, 100);
-          if (isLabImported) setTimeout(() => {labs.download("labs")}, 100);
-          if (isSportImported) setTimeout(() => {sport.download("sport")}, 100);
-          if (isOtherImported) setTimeout(() => {other.download("other")}, 100);
+          if (isPracticeImported) setTimeout(() => {practices.download("practices")}, 200);
+          if (isLabImported) setTimeout(() => {labs.download("labs")}, 300);
+          if (isSportImported) setTimeout(() => {sport.download("sport")}, 400);
+          if (isOtherImported) setTimeout(() => {other.download("other")}, 500);
         }
         onSuccess();
       }
