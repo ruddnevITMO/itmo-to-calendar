@@ -151,12 +151,6 @@
 
       var currentMethod = "auth";
       var currentDateType = "semester"
-
-
-      document.addEventListener('DOMContentLoaded', function() {
-        dateStartSemester();
-      }, false);
-
       
       var dateStartCMD = document.getElementById('start_date_cmd');
       var dateEndCMD = document.getElementById('end_date_cmd');
@@ -166,6 +160,13 @@
       dateEndInput.addEventListener('input', function () {
         dateEndCMD.innerHTML = dateEndInput.value;
       });
+
+     
+      document.addEventListener('DOMContentLoaded', function() {
+        dateStartSemester();
+        dateEndCMD.innerHTML = dateEndInput.value;
+      }, false);
+
 
       const authContainer = document.getElementById("auth-container");
       const jsonContainer = document.getElementById("json-container");
