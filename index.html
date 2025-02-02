@@ -73,7 +73,7 @@
           <p><code>decodeURI(document.cookie.split('auth._token.itmoId=')[1].split(';')[0])</code></p>
           <p><strong>Пока вы запускаете скрипт, токен может истечь (будет ошибка "Токен недействителен")</strong> — нужно будет обновить страницу и получить его заново.</p>
           <p>3. Нажимаем Enter и получаем токен, который вставляем вместо <a>TOKEN</a> в команду ниже (команда для UNIX-подобных операционных систем):</p>
-          <p><code>curl "https://my.itmo.ru/api/schedule/schedule/personal?date_start=<a id="start_date_cmd">2023-01-01</a>&date_end=<a id="end_date_cmd">2023-12-31</a>" -H "Authorization: <a>TOKEN</a>"</code></p>
+          <p><code>curl "https://my.itmo.ru/api/schedule/schedule/personal?date_start=<a id="start_date_cmd">2025-02-05</a>&date_end=<a id="end_date_cmd">2025-06-30</a>" -H "Authorization: <a>TOKEN</a>"</code></p>
           
           <p>4. Получаем расписание в формате JSON, которое можем скопировать и вставить в поле ниже.</p>
           
@@ -104,7 +104,7 @@
         <div>
           <input type="date" id="date_start" name="date_start" style="margin-bottom: 0.1rem">
           <label for="date_end">И заканчивая
-            <input type="date" id="date_end" name="date_end" value="2025-02-01" style="margin-bottom: 0.1rem" required>
+            <input type="date" id="date_end" name="date_end" value="2025-06-30" style="margin-bottom: 0.1rem" required>
           </label>
         </div>
       </div>
@@ -199,7 +199,7 @@
       function dateStartSemester() {
         currentDateType = "semester";
         dateStartInput.disabled = true;
-        dateStartInput.value = "2024-09-01"
+        dateStartInput.value = "2025-02-05"
         dateStartCMD.innerHTML = dateStartInput.value;
       }
 
