@@ -1,17 +1,17 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html data-theme="dark">
   <head>
     <title>I/İTMO to Calendar</title>
-    <base target="_top">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <base target="_top" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" />
   </head>
-  
+
   <body>
     <style>
       :root {
         --primary: #ed2257;
-        --secondary: #1355d2; 
+        --secondary: #1355d2;
       }
 
       details {
@@ -33,10 +33,10 @@
       h2 {
         margin-top: 10%;
         text-align: center;
-      } 
+      }
 
       h5 {
-        margin-bottom: 0.1rem
+        margin-bottom: 0.1rem;
       }
 
       #overlay {
@@ -49,18 +49,33 @@
         z-index: 1;
       }
     </style>
-    
 
     <div id="form">
-      <h2><a data-placement="top" data-tooltip="При нажатии откроется ручная версия, где не нужен логин Google, и не обязателен токен ИТМО" href="https://ruddnevitmo.github.io/itmo-to-calendar/">Автоматический</a> импорт расписания занятий <nobr>I/İTMO</nobr> в календарь</h1>
+      <h2>
+        <a data-placement="top" data-tooltip="При нажатии откроется ручная версия, где не нужен логин Google, и не обязателен токен ИТМО" href="https://ruddnevitmo.github.io/itmo-to-calendar/">Автоматический</a>
+        импорт расписания занятий
+        <nobr>I/İTMO</nobr>
+        в календарь
+      </h2>
 
       <div id="auth-container">
         <details>
+          <!-- prettier-ignore -->
           <summary>Токен аутентификации (<a style="color: --primary">как его получить?</a>)</summary>
-          <p>1. Открываем <a href="https://my.itmo.ru" target="_blank" rel="noopener noreferrer">my.itmo.ru</a>, нажимаем F12 (или Fn+F12 на ноутбуках), в появившемся меню находим панель Console (или Консоль), вводим туда:</p>
+          <!-- prettier-ignore -->
+          <p>
+            1. Открываем <a href="https://my.itmo.ru" target="_blank" rel="noopener noreferrer">my.itmo.ru</a>, нажимаем F12 (или Fn+F12 на ноутбуках), в появившемся меню находим панель Console (или Консоль), вводим туда:
+          </p>
           <p><code>decodeURI(document.cookie.split('auth._token.itmoId=')[1].split(';')[0])</code></p>
-          <p><strong>Пока вы запускаете скрипт, токен может истечь (будет ошибка "Токен недействителен")</strong> — нужно будет обновить страницу и получить его заново.</p>
-          <p>2. Нажимаем Enter и получаем токен, который вставляем в поле ниже.<br><i>⚠️ Если вместо токена получаем предупреждение, то нужно написать руками "allow pasting", нажать Enter, и потом повторить команду</i></p>
+          <p>
+            <strong>Пока вы запускаете скрипт, токен может истечь (будет ошибка "Токен недействителен")</strong>
+            — нужно будет обновить страницу и получить его заново.
+          </p>
+          <p>
+            2. Нажимаем Enter и получаем токен, который вставляем в поле ниже.
+            <br />
+            <i>⚠️ Если вместо токена получаем предупреждение, то нужно написать руками "allow pasting", нажать Enter, и потом повторить команду</i>
+          </p>
         </details>
         <input type="text" id="auth_token" placeholder="Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2.. и так далее " />
         <small>
@@ -70,22 +85,34 @@
       </div>
       <div id="json-container" hidden>
         <details>
+          <!-- prettier-ignore -->
           <summary>JSON расписания (<a style="color: --primary">как его получить?</a>)</summary>
           <p>1. Выбираем даты в полях ниже</p>
-          <p>2. Открываем <a href="https://my.itmo.ru" target="_blank" rel="noopener noreferrer">my.itmo.ru</a>, нажимаем F12, в появившемся меню находим панель Console (или Консоль), вводим туда:</p>
+          <p>
+            2. Открываем
+            <a href="https://my.itmo.ru" target="_blank" rel="noopener noreferrer">my.itmo.ru</a>
+            , нажимаем F12, в появившемся меню находим панель Console (или Консоль), вводим туда:
+          </p>
           <p><code>decodeURI(document.cookie.split('auth._token.itmoId=')[1].split(';')[0])</code></p>
-          <p><strong>Пока вы запускаете скрипт, токен может истечь (будет ошибка "Токен недействителен")</strong> — нужно будет обновить страницу и получить его заново.</p>
-          <p>3. Нажимаем Enter и получаем токен, который вставляем вместо <a>TOKEN</a> в команду ниже (команда для UNIX-подобных операционных систем):</p>
+          <p>
+            <strong>Пока вы запускаете скрипт, токен может истечь (будет ошибка "Токен недействителен")</strong>
+            — нужно будет обновить страницу и получить его заново.
+          </p>
+          <p>
+            3. Нажимаем Enter и получаем токен, который вставляем вместо
+            <a>TOKEN</a>
+            в команду ниже (команда для UNIX-подобных операционных систем):
+          </p>
+          <!-- prettier-ignore -->
           <p><code>curl "https://my.itmo.ru/api/schedule/schedule/personal?date_start=<a id="start_date_cmd">2025-02-05</a>&date_end=<a id="end_date_cmd">2025-06-30</a>" -H "Authorization: <a>TOKEN</a>"</code></p>
-          
+
           <p>4. Получаем расписание в формате JSON, которое можем скопировать и вставить в поле ниже.</p>
-          
         </details>
         <textarea id="jsonarea" rows="2" placeholder="Вставьте сюда JSON расписания (или переключитесь на «Не веришь мне?»)"></textarea>
         <small><a href="javascript:void" id="trust">Вернуться к более быстрому методу</a></small>
       </div>
 
-      <div class="grid"> 
+      <div class="grid">
         <div>
           <fieldset>
             <legend>Начиная с:</legend>
@@ -113,7 +140,8 @@
         </div>
       </div>
 
-      <label for="import_type">Вид результата:
+      <label for="import_type">
+        Вид результата:
         <select id="import_type" style="margin-bottom: 0" required>
           <option value="single-and-color" selected>Одним календарем (с разделением по цветам)</option>
           <option value="single">Одним календарем (одним цветом)</option>
@@ -125,35 +153,36 @@
         Сокращать адрес (ул.Ломоносова, д.9, лит. Б → Ломо)
       </label>
       <label for="change-calendar-color" style="margin-bottom: 20px">
-        <input type="checkbox" id="change-calendar-color" name="change-calendar-color" role="switch"> Если календарь уже существует, изменить его цвет
+        <input type="checkbox" id="change-calendar-color" name="change-calendar-color" role="switch" />
+        Если календарь уже существует, изменить его цвет
       </label>
-        
+
       <div id="options">
         <div id="multiple-options" hidden>
           <h5>Календарь с лекциями</h5>
           <div id="lecture-options" class="grid">
             <div>
               <label for="lecture-name">
-                <input type="text" id="lecture-name" name="lecture-name" placeholder="Лекции" value="Лекции" maxlength="25">
+                <input type="text" id="lecture-name" name="lecture-name" placeholder="Лекции" value="Лекции" maxlength="25" />
               </label>
             </div>
             <div>
               <label for="lecture-color">
-                <input id="lecture-color" name="lecture-color" type="color" value="#0091ff">
+                <input id="lecture-color" name="lecture-color" type="color" value="#0091ff" />
               </label>
             </div>
           </div>
-          
+
           <h5>Календарь с практическими занятиями</h5>
           <div id="practice-options" class="grid">
             <div>
               <label for="practice-name">
-                <input type="text" id="practice-name" name="practice-name" placeholder="Практические занятия" value="Практические занятия" maxlength="25">
+                <input type="text" id="practice-name" name="practice-name" placeholder="Практические занятия" value="Практические занятия" maxlength="25" />
               </label>
             </div>
             <div>
               <label for="practice-color">
-                <input id="practice-color" name="practice-color" type="color" value="#f7b500">
+                <input id="practice-color" name="practice-color" type="color" value="#f7b500" />
               </label>
             </div>
           </div>
@@ -162,12 +191,12 @@
           <div id="lab-options" class="grid">
             <div>
               <label for="lab-name">
-                <input type="text" id="lab-name" name="lab-name" placeholder="Лабораторные занятия" value="Лабораторные занятия" maxlength="25">
+                <input type="text" id="lab-name" name="lab-name" placeholder="Лабораторные занятия" value="Лабораторные занятия" maxlength="25" />
               </label>
             </div>
             <div>
               <label for="lab-color">
-                <input id="lab-color" name="lab-color" type="color" value="#a50aff">
+                <input id="lab-color" name="lab-color" type="color" value="#a50aff" />
               </label>
             </div>
           </div>
@@ -176,12 +205,12 @@
           <div id="sport-options" class="grid">
             <div>
               <label for="sport-name">
-                <input type="text" id="sport-name" name="sport-name" placeholder="Спорт" value="Спорт" maxlength="25">
+                <input type="text" id="sport-name" name="sport-name" placeholder="Спорт" value="Спорт" maxlength="25" />
               </label>
             </div>
             <div>
               <label for="sport-color">
-                <input id="sport-color" name="sport-color" type="color" value="#22b217">
+                <input id="sport-color" name="sport-color" type="color" value="#22b217" />
               </label>
             </div>
           </div>
@@ -190,25 +219,27 @@
           <div id="other-options" class="grid">
             <div>
               <label for="other-name">
-                <input type="text" id="other-name" name="other-name" placeholder="Всё остальное" value="Всё остальное" maxlength="25">
+                <input type="text" id="other-name" name="other-name" placeholder="Всё остальное" value="Всё остальное" maxlength="25" />
               </label>
             </div>
             <div>
               <label for="other-color">
-                <input id="other-color" name="other-color" type="color" value="#ee215b">
+                <input id="other-color" name="other-color" type="color" value="#ee215b" />
               </label>
             </div>
           </div>
         </div>
         <div id="single-options" class="grid">
           <div>
-            <label for="calendar-name">Название календаря
-              <input type="text" id="calendar-name" name="calendar-name" placeholder="Расписание ИТМО" value="Расписание ИТМО" maxlength="25">
+            <label for="calendar-name">
+              Название календаря
+              <input type="text" id="calendar-name" name="calendar-name" placeholder="Расписание ИТМО" value="Расписание ИТМО" maxlength="25" />
             </label>
           </div>
           <div>
-            <label for="calendar-color">Цвет календаря
-              <input id="calendar-color" name="calendar-color" type="color" value="#ec2255">
+            <label for="calendar-color">
+              Цвет календаря
+              <input id="calendar-color" name="calendar-color" type="color" value="#ec2255" />
             </label>
           </div>
         </div>
@@ -219,10 +250,15 @@
       </div>
 
       <div id="after-text" hidden>
-        <p>На <a href="https://myaccount.google.com/connections">myaccount.google.com/connections</a> можно отключить сервис (стороннее приложение ITMO Calendar), если вы сильно переживаете.
+        <p>
+          На
+          <a href="https://myaccount.google.com/connections">myaccount.google.com/connections</a>
+          можно отключить сервис (стороннее приложение ITMO Calendar), если вы сильно переживаете.
+        </p>
       </div>
+
       <p id="error-text" style="color: #ed2257" hidden></p>
-      <button id="btn" class="secondary" style="background-color: #1355d2">Старт</button> 
+      <button id="btn" class="secondary" style="background-color: #1355d2">Старт</button>
       <small style="text-align: center; display: block">
         made by
         <a href="https://t.me/ruddnev">@ruddnev</a>
@@ -233,8 +269,8 @@
 
     <script>
       const today = new Date();
-      const todayString = String(today.getFullYear()+"-"+("0" + (today.getMonth()+1)).slice(-2)+"-"+("0" + today.getDate()).slice(-2));
-      
+      const todayString = String(today.getFullYear() + "-" + ("0" + (today.getMonth() + 1)).slice(-2) + "-" + ("0" + today.getDate()).slice(-2));
+
       // Centralized date store — change values here. The app will place these
       // dates into the page on load. The user can replace `determineDate`
       // with custom logic that returns a different value for a given key.
@@ -264,63 +300,64 @@
 
         return DATES.hasOwnProperty(key) ? DATES[key] : "";
       }
-      
-      const button = document.getElementById('btn');
+
+      const button = document.getElementById("btn");
       button.addEventListener("click", runCal);
-      var dateStartInput = document.getElementById('date_start');
-      var dateEndInput = document.getElementById('date_end');
-      const overlay = document.getElementById('overlay');
+      var dateStartInput = document.getElementById("date_start");
+      var dateEndInput = document.getElementById("date_end");
+      const overlay = document.getElementById("overlay");
 
       var currentMethod = "auth";
-      var currentDateType = "semester"
-      
-      var dateStartCMD = document.getElementById('start_date_cmd');
-      var dateEndCMD = document.getElementById('end_date_cmd');
-      dateStartInput.addEventListener('input', function () {
+      var currentDateType = "semester";
+
+      var dateStartCMD = document.getElementById("start_date_cmd");
+      var dateEndCMD = document.getElementById("end_date_cmd");
+      dateStartInput.addEventListener("input", function () {
         dateStartCMD.innerHTML = dateStartInput.value;
       });
-      dateEndInput.addEventListener('input', function () {
+      dateEndInput.addEventListener("input", function () {
         dateEndCMD.innerHTML = dateEndInput.value;
       });
 
-      document.addEventListener('DOMContentLoaded', function() {
-        dateStartSemester();
-        // set default end date from store
-        dateEndInput.value = determineDate("semesterEnd");
-        dateEndCMD.innerHTML = dateEndInput.value;
-        // also set the inline command placeholders
-        dateStartCMD.innerHTML = determineDate("semesterStart");
-        dateEndCMD.innerHTML = determineDate("semesterEnd");
+      document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+          dateStartSemester();
+          // set default end date from store
+          dateEndInput.value = determineDate("semesterEnd");
+          dateEndCMD.innerHTML = dateEndInput.value;
+          // also set the inline command placeholders
+          dateStartCMD.innerHTML = determineDate("semesterStart");
+          dateEndCMD.innerHTML = determineDate("semesterEnd");
 
-        var jsonarea = document.getElementById("jsonarea");
-        if (jsonarea) {
-          jsonarea.placeholder = '{"code":0,"data":[{"day_number":5,"week_number":1,"date":"' + determineDate("semesterStart") + '","note":null,"type":null,"lessons":[{ ...';
-        }
-      }, false);
-
+          var jsonarea = document.getElementById("jsonarea");
+          if (jsonarea) {
+            jsonarea.placeholder = '{"code":0,"data":[{"day_number":5,"week_number":1,"date":"' + determineDate("semesterStart") + '","note":null,"type":null,"lessons":[{ ...';
+          }
+        },
+        false
+      );
 
       const authContainer = document.getElementById("auth-container");
       const jsonContainer = document.getElementById("json-container");
 
-      var noTrustText = document.getElementById('no-trust');
-      var trustText = document.getElementById('trust');
+      var noTrustText = document.getElementById("no-trust");
+      var trustText = document.getElementById("trust");
       noTrustText.onclick = noTrust;
       trustText.onclick = trust;
-
-      
 
       function noTrust() {
         returnToNormal();
         currentMethod = "json";
         authContainer.hidden = true;
-        jsonContainer.hidden = false;  
+        jsonContainer.hidden = false;
       }
 
       function trust() {
         returnToNormal();
         currentMethod = "auth";
         authContainer.hidden = false;
-        jsonContainer.hidden = true; 
+        jsonContainer.hidden = true;
       }
 
       function dateStartSemester() {
@@ -344,7 +381,7 @@
       }
 
       function handleInputChange(event) {
-        if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+        if (event.target.tagName === "INPUT" || event.target.tagName === "TEXTAREA") {
           returnToNormal();
         }
       }
@@ -353,23 +390,22 @@
         button.style.backgroundColor = "#1355d2";
         button.innerHTML = "Старт";
         button.disabled = false;
-        document.getElementById('error-text').hidden = true;
-        document.getElementById('after-text').hidden = true;
+        document.getElementById("error-text").hidden = true;
+        document.getElementById("after-text").hidden = true;
       }
 
       var importTypeSelect = document.getElementById("import_type");
       importTypeSelect.addEventListener("change", switchOptions);
 
       var isChangeExistingColor = false;
-      document.getElementById('change-calendar-color').addEventListener('change', (e) => {
+      document.getElementById("change-calendar-color").addEventListener("change", (e) => {
         isChangeExistingColor = e.target.checked ? true : false;
-      })
+      });
 
       var isShortenAddress = true;
-      document.getElementById('shorten-address').addEventListener('change', (e) => {
+      document.getElementById("shorten-address").addEventListener("change", (e) => {
         isShortenAddress = e.target.checked ? true : false;
-      })
-      
+      });
 
       var singleOptions = document.getElementById("single-options");
       var multipleOptions = document.getElementById("multiple-options");
@@ -389,12 +425,12 @@
         handleInputChange(event);
       }
 
-      document.addEventListener('input', handleInputChange);
+      document.addEventListener("input", handleInputChange);
 
       function onSuccess(result) {
         overlay.hidden = true;
-        document.getElementById('progress-bar').hidden = true;
-        document.getElementById('after-text').hidden = false;
+        document.getElementById("progress-bar").hidden = true;
+        document.getElementById("after-text").hidden = false;
         button.disabled = true;
         button.innerHTML = "Готово! Проверяй календарь";
         button.style.backgroundColor = "green";
@@ -402,9 +438,9 @@
 
       function onFailure(error) {
         overlay.hidden = true;
-        document.getElementById('progress-bar').hidden = true;
-        document.getElementById('error-text').innerHTML = error.message;
-        document.getElementById('error-text').hidden = false;
+        document.getElementById("progress-bar").hidden = true;
+        document.getElementById("error-text").innerHTML = error.message;
+        document.getElementById("error-text").hidden = false;
         button.disabled = true;
         button.style.backgroundColor = "red";
         button.innerHTML = "Ошибка!";
@@ -416,36 +452,33 @@
         var authToken = document.getElementById("auth_token").value.replaceAll("'", "");
 
         try {
-          const response = await fetch(
-            'https://my.itmo.ru/api/schedule/schedule/personal?date_start=' + dateStart + "&date_end=" + dateEnd,
-            {
-              headers: {
-                Authorization: `${authToken}`,
-                'accept-language': 'ru',
-              },
-            }
-          ); 
+          const response = await fetch("https://my.itmo.ru/api/schedule/schedule/personal?date_start=" + dateStart + "&date_end=" + dateEnd, {
+            headers: {
+              Authorization: `${authToken}`,
+              "accept-language": "ru",
+            },
+          });
           if (!response.ok) {
             throw new Error(`Не получилось связаться с my.itmo.ru! Код ошибки: ${response.status}. Возможно, токен истёк либо был указан неправильно.`);
           }
           const data = await response.json();
-          
+
           if (data.data && data.data.length == 0) {
             onFailure();
             document.getElementById("error-text").innerHTML = "В выбранном диапазоне нет занятий!";
             document.getElementById("error-text").hidden = false;
             return;
           }
-          
+
           return JSON.stringify(data);
         } catch (error) {
-            overlay.hidden = true;
-            document.getElementById('progress-bar').hidden = true;
-            button.disabled = true;
-            button.style.backgroundColor = "red";
-            button.innerHTML = "Ошибка!";
-            document.getElementById('error-text').innerHTML = error.message;
-            document.getElementById('error-text').hidden = false;
+          overlay.hidden = true;
+          document.getElementById("progress-bar").hidden = true;
+          button.disabled = true;
+          button.style.backgroundColor = "red";
+          button.innerHTML = "Ошибка!";
+          document.getElementById("error-text").innerHTML = error.message;
+          document.getElementById("error-text").hidden = false;
           return;
         }
       }
@@ -458,40 +491,38 @@
         overlay.hidden = false;
         button.style.backgroundColor = "#f7bd02";
         button.innerHTML = "Обработка.. Может занять около 3 минут";
-        document.getElementById('progress-bar').hidden = false;
-        
+        document.getElementById("progress-bar").hidden = false;
+
         const options = {
           calendarName: calendarName != "" ? calendarName : "Расписание ИТМО",
           isChangeExistingColor: isChangeExistingColor,
           calendarColor: calendarColor,
-          
+
           isColoredSingle: isColoredSingle,
           isMultiCalendar: isMultiCalendar,
           isShortenAddress: isShortenAddress,
           lectureName: document.getElementById("lecture-name").value != "" ? document.getElementById("lecture-name").value : "Лекции",
-          lectureColor:  document.getElementById("lecture-color").value != "" ? document.getElementById("lecture-color").value : null,
+          lectureColor: document.getElementById("lecture-color").value != "" ? document.getElementById("lecture-color").value : null,
           practiceName: document.getElementById("practice-name").value != "" ? document.getElementById("practice-name").value : "Практические занятия",
-          practiceColor:  document.getElementById("practice-color").value != "" ? document.getElementById("practice-color").value : null,
+          practiceColor: document.getElementById("practice-color").value != "" ? document.getElementById("practice-color").value : null,
           labName: document.getElementById("lab-name").value != "" ? document.getElementById("lab-name").value : "Лабораторные занятия",
-          labColor:  document.getElementById("lab-color").value != "" ? document.getElementById("lab-color").value : null,
+          labColor: document.getElementById("lab-color").value != "" ? document.getElementById("lab-color").value : null,
           sportName: document.getElementById("sport-name").value != "" ? document.getElementById("sport-name").value : "Спорт",
-          sportColor:  document.getElementById("sport-color").value != "" ? document.getElementById("sport-color").value : null,
+          sportColor: document.getElementById("sport-color").value != "" ? document.getElementById("sport-color").value : null,
           otherName: document.getElementById("other-name").value != "" ? document.getElementById("other-name").value : "Всё остальное",
-          otherColor:  document.getElementById("other-color").value != "" ? document.getElementById("other-color").value : null,
+          otherColor: document.getElementById("other-color").value != "" ? document.getElementById("other-color").value : null,
         };
 
         if (currentMethod == "auth") {
-          fetchSchedule().then(data => {
-            if (data) {google.script.run.withSuccessHandler(onSuccess).withFailureHandler(onFailure).calendarJSON(data, options)}
+          fetchSchedule().then((data) => {
+            if (data) {
+              google.script.run.withSuccessHandler(onSuccess).withFailureHandler(onFailure).calendarJSON(data, options);
+            }
           });
         } else if (currentMethod == "json") {
           google.script.run.withSuccessHandler(onSuccess).withFailureHandler(onFailure).calendar(jsonData, options);
         }
       }
-
-
-
     </script>
-
   </body>
 </html>
