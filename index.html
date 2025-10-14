@@ -69,15 +69,13 @@
 
       <div id="auth-container">
         <details class="no-margin-bottom">
+          <!-- prettier-ignore -->
           <summary>
-            Токен аутентификации (
-            <a style="color: --primary">как его получить?</a>
-            )
+            Токен аутентификации (<a style="color: --primary">как его получить?</a>)
           </summary>
+          <!-- prettier-ignore -->
           <p>
-            1. Открываем
-            <a href="https://my.itmo.ru" target="_blank" rel="noopener noreferrer">my.itmo.ru</a>
-            , нажимаем F12 (или Fn+F12 на ноутбуках), в появившемся меню находим панель Console (или Консоль), вводим туда:
+            1. Открываем <a href="https://my.itmo.ru" target="_blank" rel="noopener noreferrer">my.itmo.ru</a>, нажимаем F12 (или Fn+F12 на ноутбуках), в появившемся меню находим панель Console (или Консоль), вводим туда:
           </p>
           <p>
             <code>decodeURI(document.cookie.split('auth._token.itmoId=')[1].split(';')[0])</code>
@@ -100,16 +98,14 @@
       </div>
       <div id="json-container" hidden>
         <details class="no-margin-bottom">
+          <!-- prettier-ignore -->
           <summary>
-            JSON расписания (
-            <a style="color: --primary">как его получить?</a>
-            )
+            JSON расписания (<a style="color: --primary">как его получить?</a>)
           </summary>
           <p>1. Выбираем даты в полях ниже</p>
+          <!-- prettier-ignore -->
           <p>
-            2. Открываем
-            <a href="https://my.itmo.ru" target="_blank" rel="noopener noreferrer">my.itmo.ru</a>
-            , нажимаем F12, в появившемся меню находим панель Console (или Консоль), вводим туда:
+            2. Открываем<a href="https://my.itmo.ru" target="_blank" rel="noopener noreferrer">my.itmo.ru</a>, нажимаем F12, в появившемся меню находим панель Console (или Консоль), вводим туда:
           </p>
           <p>
             <code>decodeURI(document.cookie.split('auth._token.itmoId=')[1].split(';')[0])</code>
@@ -124,14 +120,9 @@
             в команду ниже (команда для UNIX-подобных операционных систем):
           </p>
           <p>
+            <!-- prettier-ignore -->
             <code>
-              curl "https://my.itmo.ru/api/schedule/schedule/personal?date_start=
-              <a id="start_date_cmd"></a>
-              &date_end=
-              <a id="end_date_cmd"></a>
-              " -H "Authorization:
-              <a>TOKEN</a>
-              "
+              curl "https://my.itmo.ru/api/schedule/schedule/personal?date_start=<a id="start_date_cmd"></a>&date_end=<a id="end_date_cmd"></a>" -H "Authorization: <a>TOKEN</a>"
             </code>
           </p>
 
@@ -188,20 +179,9 @@
         <div id="multiple-import" hidden>
           <p><strong>Следующие шаги:</strong></p>
           <p>1. Разрешите скачивание нескольких файлов, если вас об этом попросит браузер.</p>
+          <!-- prettier-ignore -->
           <p>
-            2. Скачаются файлы
-            <code>lectures.ics</code>
-            ,
-            <code>practices.ics</code>
-            ,
-            <code>labs.ics</code>
-            ,
-            <code>sport.ics</code>
-            и
-            <code>other.ics</code>
-            . Могут скачаться не все, например, если нет спорта в расписании, то календаря
-            <code>sport.ics</code>
-            не будет.
+            2. Скачаются файлы <code>lectures.ics</code>, <code>practices.ics</code>, <code>labs.ics</code>, <code>sport.ics</code> и <code>other.ics</code>. Могут скачаться не все, например, если нет спорта в расписании, то календаря<code>sport.ics</code>не будет.
           </p>
           <p>
             3. Посетите
@@ -216,10 +196,9 @@
         </div>
         <div id="single-import">
           <p><strong>Следующие шаги:</strong></p>
+          <!-- prettier-ignore -->
           <p>
-            1. Скачается файл
-            <code>schedule.ics</code>
-            , найдите его в проводнике.
+            1. Скачается файл <code>schedule.ics</code>, найдите его в проводнике.
           </p>
           <p>
             2. Посетите
