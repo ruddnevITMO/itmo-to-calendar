@@ -62,8 +62,11 @@
           <p><strong>Пока вы запускаете скрипт, токен может истечь (будет ошибка "Токен недействителен")</strong> — нужно будет обновить страницу и получить его заново.</p>
           <p>2. Нажимаем Enter и получаем токен, который вставляем в поле ниже.<br><i>⚠️ Если вместо токена получаем предупреждение, то нужно написать руками "allow pasting", нажать Enter, и потом повторить команду</i></p>
         </details>
-        <input type="text" id="auth_token" placeholder="Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2.. и так далее ">
-        <small>Используется один раз для скачивания расписания. <a href="javascript:void" id="no-trust">Не веришь мне?</a></small>
+        <input type="text" id="auth_token" placeholder="Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2.. и так далее " />
+        <small>
+          Используется один раз для скачивания расписания.
+          <a href="javascript:void" id="no-trust">Не веришь мне?</a>
+        </small>
       </div>
       <div id="json-container" hidden>
         <details>
@@ -78,7 +81,7 @@
           <p>4. Получаем расписание в формате JSON, которое можем скопировать и вставить в поле ниже.</p>
           
         </details>
-        <textarea id="jsonarea" rows="2" placeholder='{"code":0,"data":[{"day_number":5,"week_number":1,"date":"2025-02-05","note":null,"type":null,"lessons":[{ ...'></textarea>
+        <textarea id="jsonarea" rows="2" placeholder="Вставьте сюда JSON расписания (или переключитесь на «Не веришь мне?»)"></textarea>
         <small><a href="javascript:void" id="trust">Вернуться к более быстрому методу</a></small>
       </div>
 
@@ -87,24 +90,25 @@
           <fieldset>
             <legend>Начиная с:</legend>
             <label for="start_of_semester">
-              <input type="radio" id="start_of_semester" name="size" value="start_of_semester" onclick="dateStartSemester()" checked>
+              <input type="radio" id="start_of_semester" name="size" value="start_of_semester" onclick="dateStartSemester()" checked />
               Начала семестра
             </label>
             <label for="today">
-              <input type="radio" id="today" name="size" value="today" onclick="dateStartToday()">
+              <input type="radio" id="today" name="size" value="today" onclick="dateStartToday()" />
               Сегодня
             </label>
             <label for="custom_date">
-              <input type="radio" id="custom_date" name="size" value="custom_date" onclick="dateStartCustom()">
+              <input type="radio" id="custom_date" name="size" value="custom_date" onclick="dateStartCustom()" />
               Своя дата
             </label>
           </fieldset>
         </div>
 
         <div>
-          <input type="date" id="date_start" name="date_start" style="margin-bottom: 0.1rem">
-          <label for="date_end">И заканчивая
-            <input type="date" id="date_end" name="date_end" value="2025-06-30"  style="margin-bottom: 0.1rem" required>
+          <input type="date" id="date_start" name="date_start" style="margin-bottom: 0.1rem" />
+          <label for="date_end">
+            И заканчивая
+            <input type="date" id="date_end" name="date_end" style="margin-bottom: 0.1rem" required />
           </label>
         </div>
       </div>
@@ -117,7 +121,8 @@
         </select>
       </label>
       <label for="shorten-address">
-        <input type="checkbox" id="shorten-address" name="shorten-address" role="switch" checked> Сокращать адрес (ул.Ломоносова, д.9, лит. Б → Ломо) 
+        <input type="checkbox" id="shorten-address" name="shorten-address" role="switch" checked />
+        Сокращать адрес (ул.Ломоносова, д.9, лит. Б → Ломо)
       </label>
       <label for="change-calendar-color" style="margin-bottom: 20px">
         <input type="checkbox" id="change-calendar-color" name="change-calendar-color" role="switch"> Если календарь уже существует, изменить его цвет
@@ -218,7 +223,10 @@
       </div>
       <p id="error-text" style="color: #ed2257" hidden></p>
       <button id="btn" class="secondary" style="background-color: #1355d2">Старт</button> 
-      <small style="text-align: center; display: block;">made by <a href="https://t.me/ruddnev">@ruddnev</a></small>
+      <small style="text-align: center; display: block">
+        made by
+        <a href="https://t.me/ruddnev">@ruddnev</a>
+      </small>
 
       <div id="overlay" hidden></div>
     </div>
@@ -226,6 +234,37 @@
     <script>
       const today = new Date();
       const todayString = String(today.getFullYear()+"-"+("0" + (today.getMonth()+1)).slice(-2)+"-"+("0" + today.getDate()).slice(-2));
+      
+      // Centralized date store — change values here. The app will place these
+      // dates into the page on load. The user can replace `determineDate`
+      // with custom logic that returns a different value for a given key.
+      const DATES = {
+        semesterStart: "",
+        semesterEnd: "",
+      };
+
+      // Default determineDate: returns the value from DATES. Replace this
+      // function with your own logic to compute dates dynamically.
+      function determineDate(key) {
+        // If current date is between Aug 1 and Jan 31, adjust semester dates
+        const month = today.getMonth() + 1; // 1-12
+        const day = today.getDate();
+
+        const year = today.getFullYear();
+        if (month >= 8 || month <= 1) {
+          // Between August 1 and January 31 - Fall semester
+          const fallYear = month >= 8 ? year : year - 1;
+          DATES.semesterStart = `${fallYear}-09-01`;
+          DATES.semesterEnd = `${fallYear + 1}-01-31`;
+        } else {
+          // Between February 1 and July 31 - Spring semester
+          DATES.semesterStart = `${year}-02-01`;
+          DATES.semesterEnd = `${year}-07-31`;
+        }
+
+        return DATES.hasOwnProperty(key) ? DATES[key] : "";
+      }
+      
       const button = document.getElementById('btn');
       button.addEventListener("click", runCal);
       var dateStartInput = document.getElementById('date_start');
@@ -246,7 +285,17 @@
 
       document.addEventListener('DOMContentLoaded', function() {
         dateStartSemester();
+        // set default end date from store
+        dateEndInput.value = determineDate("semesterEnd");
         dateEndCMD.innerHTML = dateEndInput.value;
+        // also set the inline command placeholders
+        dateStartCMD.innerHTML = determineDate("semesterStart");
+        dateEndCMD.innerHTML = determineDate("semesterEnd");
+
+        var jsonarea = document.getElementById("jsonarea");
+        if (jsonarea) {
+          jsonarea.placeholder = '{"code":0,"data":[{"day_number":5,"week_number":1,"date":"' + determineDate("semesterStart") + '","note":null,"type":null,"lessons":[{ ...';
+        }
       }, false);
 
 
@@ -277,7 +326,8 @@
       function dateStartSemester() {
         currentDateType = "semester";
         dateStartInput.disabled = true;
-        dateStartInput.value = "2025-02-05"
+        // obtain semester start from centralized store via determineDate
+        dateStartInput.value = determineDate("semesterStart");
         dateStartCMD.innerHTML = dateStartInput.value;
       }
 
@@ -378,8 +428,16 @@
           if (!response.ok) {
             throw new Error(`Не получилось связаться с my.itmo.ru! Код ошибки: ${response.status}. Возможно, токен истёк либо был указан неправильно.`);
           }
-          const data = response.text();
-          return data;
+          const data = await response.json();
+          
+          if (data.data && data.data.length == 0) {
+            onFailure();
+            document.getElementById("error-text").innerHTML = "В выбранном диапазоне нет занятий!";
+            document.getElementById("error-text").hidden = false;
+            return;
+          }
+          
+          return JSON.stringify(data);
         } catch (error) {
             overlay.hidden = true;
             document.getElementById('progress-bar').hidden = true;
