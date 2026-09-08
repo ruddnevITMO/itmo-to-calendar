@@ -123,6 +123,7 @@
 
       for (var lessonNum = 0; lessonNum < day.lessons.length; lessonNum++) {
         var lesson = day.lessons[lessonNum];
+        if (options.excludedSubjects && options.excludedSubjects.indexOf(lesson.subject) !== -1) continue;
 
         var timeStartArray = lesson.time_start.split(":");
         var timeStart = new Date(day.date);
