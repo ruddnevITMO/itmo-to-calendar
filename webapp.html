@@ -48,6 +48,79 @@
         background-color: rgba(0, 0, 0, 0.5);
         z-index: 1;
       }
+
+      #filter-toggle {
+        width: 100%;
+        font-size: 1.05rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.9rem 1.2rem;
+      }
+      #filter-toggle .count {
+        font-weight: normal;
+        opacity: 0.85;
+        font-size: 0.85rem;
+      }
+      #filter-toggle .chevron {
+        transition: transform 0.15s ease;
+      }
+      #filter-toggle.open .chevron {
+        transform: rotate(180deg);
+      }
+      #filter-panel {
+        border: 1px solid var(--form-element-border-color, #444);
+        border-top: none;
+        border-radius: 0 0 var(--border-radius) var(--border-radius);
+        padding: 0.8rem 1rem 1rem 1rem;
+        margin-top: -1rem;
+        margin-bottom: 1rem;
+      }
+      #filter-panel.hidden {
+        display: none;
+      }
+      .filter-actions {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 0.6rem;
+        font-size: 0.85rem;
+      }
+      .filter-actions a {
+        cursor: pointer;
+      }
+      .subject-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        max-height: 260px;
+        overflow-y: auto;
+      }
+      .subject-item {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.35rem 0.5rem;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.03);
+      }
+      .subject-item input {
+        margin: 0;
+      }
+      .subject-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .subject-item label {
+        margin: 0;
+        cursor: pointer;
+        flex: 1;
+      }
+      .subject-item.excluded label {
+        opacity: 0.5;
+        text-decoration: line-through;
+      }
     </style>
     
 
@@ -130,7 +203,18 @@
       <label for="change-calendar-color" style="margin-bottom: 20px">
         <input type="checkbox" id="change-calendar-color" name="change-calendar-color" role="switch"> Если календарь уже существует, изменить его цвет
       </label>
-        
+      <button type="button" id="filter-toggle" class="secondary outline" hidden>
+        <span>🎛 Фильтр предметов <span class="count" id="filter-count"></span></span>
+        <span class="chevron">▾</span>
+      </button>
+      <div id="filter-panel" class="hidden">
+        <div class="filter-actions">
+          <a href="javascript:void" id="select-all">Выбрать все</a>
+          <a href="javascript:void" id="select-none">Снять все</a>
+        </div>
+        <div class="subject-list" id="subject-list"></div>
+      </div>
+
       <div id="options">
         <div id="multiple-options" hidden>
           <h5>Календарь с лекциями</h5>
@@ -275,7 +359,15 @@
       }
       
       const button = document.getElementById('btn');
-      button.addEventListener("click", runCal);
+      button.addEventListener("click", handleButtonClick);
+
+      function handleButtonClick() {
+        if (scheduleData == null) {
+          loadSchedule();
+        } else {
+          generateCalendar();
+        }
+      }
       var dateStartInput = document.getElementById('date_start');
       var dateEndInput = document.getElementById('date_end');
       const overlay = document.getElementById('overlay');
@@ -358,12 +450,110 @@
         }
       }
 
+      const FILTER_STORAGE_KEY = "itmo-filter-excluded-subjects";
+
+      function loadExcludedSubjects() {
+        try {
+          return new Set(JSON.parse(localStorage.getItem(FILTER_STORAGE_KEY) || "[]"));
+        } catch (e) {
+          return new Set();
+        }
+      }
+
+      function saveExcludedSubjects(set) {
+        localStorage.setItem(FILTER_STORAGE_KEY, JSON.stringify(Array.from(set)));
+      }
+
+      function subjectColor(name) {
+        let hash = 0;
+        for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+        const hue = Math.abs(hash) % 360;
+        return `hsl(${hue}, 65%, 55%)`;
+      }
+
+      function extractSubjects(data) {
+        var subjects = new Set();
+        data.data.forEach(function (day) {
+          day.lessons.forEach(function (lesson) {
+            subjects.add(lesson.subject);
+          });
+        });
+        return Array.from(subjects).sort();
+      }
+
+      var excludedSubjects = loadExcludedSubjects();
+      var scheduleData = null;
+
+      function updateFilterCount(subjects) {
+        var selected = subjects.filter(function (s) {
+          return !excludedSubjects.has(s);
+        }).length;
+        document.getElementById("filter-count").textContent = "(выбрано " + selected + " из " + subjects.length + ")";
+      }
+
+      function renderSubjectFilter(subjects) {
+        var list = document.getElementById("subject-list");
+        list.innerHTML = "";
+        subjects.forEach(function (subject, i) {
+          var isExcluded = excludedSubjects.has(subject);
+          var item = document.createElement("div");
+          item.className = "subject-item" + (isExcluded ? " excluded" : "");
+          var checkboxId = "subj-" + i;
+          item.innerHTML =
+            '<input type="checkbox" id="' + checkboxId + '" ' + (isExcluded ? "" : "checked") + " />" +
+            '<span class="subject-dot" style="background:' + subjectColor(subject) + '"></span>' +
+            '<label for="' + checkboxId + '">' + subject + "</label>";
+          var checkbox = item.querySelector("input");
+          checkbox.addEventListener("change", function () {
+            if (checkbox.checked) excludedSubjects.delete(subject);
+            else excludedSubjects.add(subject);
+            saveExcludedSubjects(excludedSubjects);
+            item.classList.toggle("excluded", !checkbox.checked);
+            updateFilterCount(subjects);
+          });
+          list.appendChild(item);
+        });
+        updateFilterCount(subjects);
+      }
+
+      function showSubjectFilter(data) {
+        var subjects = extractSubjects(data);
+        renderSubjectFilter(subjects);
+        document.getElementById("filter-toggle").hidden = false;
+
+        document.getElementById("select-all").onclick = function () {
+          excludedSubjects.clear();
+          saveExcludedSubjects(excludedSubjects);
+          renderSubjectFilter(subjects);
+        };
+        document.getElementById("select-none").onclick = function () {
+          subjects.forEach(function (s) {
+            excludedSubjects.add(s);
+          });
+          saveExcludedSubjects(excludedSubjects);
+          renderSubjectFilter(subjects);
+        };
+      }
+
+      function hideSubjectFilter() {
+        document.getElementById("filter-toggle").hidden = true;
+        document.getElementById("filter-panel").classList.add("hidden");
+        document.getElementById("filter-toggle").classList.remove("open");
+      }
+
+      document.getElementById("filter-toggle").addEventListener("click", function () {
+        document.getElementById("filter-panel").classList.toggle("hidden");
+        this.classList.toggle("open");
+      });
+
       function returnToNormal() {
         button.style.backgroundColor = "#1355d2";
         button.innerHTML = "Старт";
         button.disabled = false;
         document.getElementById('error-text').hidden = true;
         document.getElementById('after-text').hidden = true;
+        scheduleData = null;
+        hideSubjectFilter();
       }
 
       var importTypeSelect = document.getElementById("import_type");
@@ -459,21 +649,56 @@
         }
       }
 
-      function runCal() {
+      function loadSchedule() {
+        var jsonData = document.getElementById("jsonarea").value;
+
+        overlay.hidden = false;
+        button.style.backgroundColor = "#f7bd02";
+        button.innerHTML = "Загрузка расписания..";
+        document.getElementById('progress-bar').hidden = false;
+
+        if (currentMethod == "auth") {
+          fetchSchedule().then(data => {
+            if (data) onScheduleLoaded(JSON.parse(data));
+          });
+        } else if (currentMethod == "json") {
+          try {
+            onScheduleLoaded(JSON.parse(jsonData));
+          } catch (error) {
+            overlay.hidden = true;
+            document.getElementById('progress-bar').hidden = true;
+            button.disabled = true;
+            button.style.backgroundColor = "red";
+            button.innerHTML = "Ошибка!";
+            document.getElementById('error-text').innerHTML = error.message;
+            document.getElementById('error-text').hidden = false;
+          }
+        }
+      }
+
+      function onScheduleLoaded(data) {
+        scheduleData = data;
+        overlay.hidden = true;
+        document.getElementById('progress-bar').hidden = true;
+        showSubjectFilter(data);
+        button.style.backgroundColor = "#1355d2";
+        button.innerHTML = "Сгенерировать";
+      }
+
+      function generateCalendar() {
         var calendarColor = document.getElementById("calendar-color").value;
         var calendarName = document.getElementById("calendar-name").value;
-        var jsonData = document.getElementById("jsonarea").value;
 
         overlay.hidden = false;
         button.style.backgroundColor = "#f7bd02";
         button.innerHTML = "Обработка.. Может занять около 3 минут";
         document.getElementById('progress-bar').hidden = false;
-        
+
         const options = {
           calendarName: calendarName != "" ? calendarName : "Расписание ИТМО",
           isChangeExistingColor: isChangeExistingColor,
           calendarColor: calendarColor,
-          
+
           isColoredSingle: isColoredSingle,
           isMultiCalendar: isMultiCalendar,
           isShortenAddress: isShortenAddress,
@@ -487,15 +712,10 @@
           sportColor:  document.getElementById("sport-color").value != "" ? document.getElementById("sport-color").value : null,
           otherName: document.getElementById("other-name").value != "" ? document.getElementById("other-name").value : "Всё остальное",
           otherColor:  document.getElementById("other-color").value != "" ? document.getElementById("other-color").value : null,
+          excludedSubjects: Array.from(excludedSubjects),
         };
 
-        if (currentMethod == "auth") {
-          fetchSchedule().then(data => {
-            if (data) {google.script.run.withSuccessHandler(onSuccess).withFailureHandler(onFailure).calendarJSON(data, options)}
-          });
-        } else if (currentMethod == "json") {
-          google.script.run.withSuccessHandler(onSuccess).withFailureHandler(onFailure).calendar(jsonData, options);
-        }
+        google.script.run.withSuccessHandler(onSuccess).withFailureHandler(onFailure).calendarJSON(JSON.stringify(scheduleData), options);
       }
 
 
