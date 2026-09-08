@@ -347,6 +347,37 @@
         }
       }
 
+      const FILTER_STORAGE_KEY = "itmo-filter-excluded-subjects";
+
+      function loadExcludedSubjects() {
+        try {
+          return new Set(JSON.parse(localStorage.getItem(FILTER_STORAGE_KEY) || "[]"));
+        } catch (e) {
+          return new Set();
+        }
+      }
+
+      function saveExcludedSubjects(set) {
+        localStorage.setItem(FILTER_STORAGE_KEY, JSON.stringify(Array.from(set)));
+      }
+
+      function subjectColor(name) {
+        let hash = 0;
+        for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+        const hue = Math.abs(hash) % 360;
+        return `hsl(${hue}, 65%, 55%)`;
+      }
+
+      function extractSubjects(data) {
+        var subjects = new Set();
+        data.data.forEach(function (day) {
+          day.lessons.forEach(function (lesson) {
+            subjects.add(lesson.subject);
+          });
+        });
+        return Array.from(subjects).sort();
+      }
+
       function returnToNormal() {
         button.style.backgroundColor = "#1355d2";
         button.innerHTML = "Старт";
