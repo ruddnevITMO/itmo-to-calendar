@@ -50,6 +50,79 @@
         background-color: rgba(0, 0, 0, 0.5);
         z-index: 1;
       }
+
+      #filter-toggle {
+        width: 100%;
+        font-size: 1.05rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.9rem 1.2rem;
+      }
+      #filter-toggle .count {
+        font-weight: normal;
+        opacity: 0.85;
+        font-size: 0.85rem;
+      }
+      #filter-toggle .chevron {
+        transition: transform 0.15s ease;
+      }
+      #filter-toggle.open .chevron {
+        transform: rotate(180deg);
+      }
+      #filter-panel {
+        border: 1px solid var(--form-element-border-color, #444);
+        border-top: none;
+        border-radius: 0 0 var(--border-radius) var(--border-radius);
+        padding: 0.8rem 1rem 1rem 1rem;
+        margin-top: -1rem;
+        margin-bottom: 1rem;
+      }
+      #filter-panel.hidden {
+        display: none;
+      }
+      .filter-actions {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 0.6rem;
+        font-size: 0.85rem;
+      }
+      .filter-actions a {
+        cursor: pointer;
+      }
+      .subject-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        max-height: 260px;
+        overflow-y: auto;
+      }
+      .subject-item {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.35rem 0.5rem;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.03);
+      }
+      .subject-item input {
+        margin: 0;
+      }
+      .subject-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .subject-item label {
+        margin: 0;
+        cursor: pointer;
+        flex: 1;
+      }
+      .subject-item.excluded label {
+        opacity: 0.5;
+        text-decoration: line-through;
+      }
     </style>
 
     <div id="form">
@@ -172,6 +245,17 @@
         <input type="checkbox" id="shorten-address" name="shorten-address" role="switch" checked />
         Сокращать адрес (ул.Ломоносова, д.9, лит. Б → Ломо)
       </label>
+      <button type="button" id="filter-toggle" class="secondary outline" hidden>
+        <span>🎛 Фильтр предметов <span class="count" id="filter-count"></span></span>
+        <span class="chevron">▾</span>
+      </button>
+      <div id="filter-panel" class="hidden">
+        <div class="filter-actions">
+          <a href="javascript:void" id="select-all">Выбрать все</a>
+          <a href="javascript:void" id="select-none">Снять все</a>
+        </div>
+        <div class="subject-list" id="subject-list"></div>
+      </div>
 
       <div id="progress-bar" hidden>
         <progress></progress>
@@ -263,7 +347,15 @@
         return DATES.hasOwnProperty(key) ? DATES[key] : "";
       }
       const button = document.getElementById("btn");
-      button.addEventListener("click", runCal);
+      button.addEventListener("click", handleButtonClick);
+
+      function handleButtonClick() {
+        if (scheduleData == null) {
+          loadSchedule();
+        } else {
+          generateCalendar();
+        }
+      }
       var dateStartInput = document.getElementById("date_start");
       var dateEndInput = document.getElementById("date_end");
       const overlay = document.getElementById("overlay");
@@ -378,12 +470,79 @@
         return Array.from(subjects).sort();
       }
 
+      var excludedSubjects = loadExcludedSubjects();
+      var scheduleData = null;
+
+      function updateFilterCount(subjects) {
+        var selected = subjects.filter(function (s) {
+          return !excludedSubjects.has(s);
+        }).length;
+        document.getElementById("filter-count").textContent = "(выбрано " + selected + " из " + subjects.length + ")";
+      }
+
+      function renderSubjectFilter(subjects) {
+        var list = document.getElementById("subject-list");
+        list.innerHTML = "";
+        subjects.forEach(function (subject, i) {
+          var isExcluded = excludedSubjects.has(subject);
+          var item = document.createElement("div");
+          item.className = "subject-item" + (isExcluded ? " excluded" : "");
+          var checkboxId = "subj-" + i;
+          item.innerHTML =
+            '<input type="checkbox" id="' + checkboxId + '" ' + (isExcluded ? "" : "checked") + " />" +
+            '<span class="subject-dot" style="background:' + subjectColor(subject) + '"></span>' +
+            '<label for="' + checkboxId + '">' + subject + "</label>";
+          var checkbox = item.querySelector("input");
+          checkbox.addEventListener("change", function () {
+            if (checkbox.checked) excludedSubjects.delete(subject);
+            else excludedSubjects.add(subject);
+            saveExcludedSubjects(excludedSubjects);
+            item.classList.toggle("excluded", !checkbox.checked);
+            updateFilterCount(subjects);
+          });
+          list.appendChild(item);
+        });
+        updateFilterCount(subjects);
+      }
+
+      function showSubjectFilter(data) {
+        var subjects = extractSubjects(data);
+        renderSubjectFilter(subjects);
+        document.getElementById("filter-toggle").hidden = false;
+
+        document.getElementById("select-all").onclick = function () {
+          excludedSubjects.clear();
+          saveExcludedSubjects(excludedSubjects);
+          renderSubjectFilter(subjects);
+        };
+        document.getElementById("select-none").onclick = function () {
+          subjects.forEach(function (s) {
+            excludedSubjects.add(s);
+          });
+          saveExcludedSubjects(excludedSubjects);
+          renderSubjectFilter(subjects);
+        };
+      }
+
+      function hideSubjectFilter() {
+        document.getElementById("filter-toggle").hidden = true;
+        document.getElementById("filter-panel").classList.add("hidden");
+        document.getElementById("filter-toggle").classList.remove("open");
+      }
+
+      document.getElementById("filter-toggle").addEventListener("click", function () {
+        document.getElementById("filter-panel").classList.toggle("hidden");
+        this.classList.toggle("open");
+      });
+
       function returnToNormal() {
         button.style.backgroundColor = "#1355d2";
         button.innerHTML = "Старт";
         button.disabled = false;
         document.getElementById("error-text").hidden = true;
         document.getElementById("after-text").hidden = true;
+        scheduleData = null;
+        hideSubjectFilter();
       }
 
       var isShortenAddress = true;
@@ -453,27 +612,43 @@
 
       const getParsedTime = (date) => [date.getFullYear(), date.getMonth() + 1, date.getDate(), date.getHours(), date.getMinutes()];
 
-      function runCal() {
+      function loadSchedule() {
         overlay.hidden = false;
         button.style.backgroundColor = "#f7bd02";
         button.innerHTML = "Обработка..";
-
         document.getElementById("progress-bar").hidden = false;
 
         if (currentMethod == "auth") {
           fetchSchedule().then((data) => {
-            getCal(data);
+            if (data) onScheduleLoaded(data);
           });
         } else if (currentMethod == "json") {
           try {
             var jsonData = JSON.parse(document.getElementById("jsonarea").value);
-            getCal(jsonData);
+            onScheduleLoaded(jsonData);
           } catch (error) {
             onFailure();
             document.getElementById("error-text").innerHTML = error.message;
             document.getElementById("error-text").hidden = false;
           }
         }
+      }
+
+      function onScheduleLoaded(data) {
+        scheduleData = data;
+        overlay.hidden = true;
+        document.getElementById("progress-bar").hidden = true;
+        showSubjectFilter(data);
+        button.style.backgroundColor = "#1355d2";
+        button.innerHTML = "Сгенерировать";
+      }
+
+      function generateCalendar() {
+        overlay.hidden = false;
+        button.style.backgroundColor = "#f7bd02";
+        button.innerHTML = "Обработка..";
+        document.getElementById("progress-bar").hidden = false;
+        getCal(scheduleData);
       }
 
       function getCal(data) {
@@ -508,6 +683,7 @@
           var day = data[dayNum];
           for (var lessonNum = 0; lessonNum < day.lessons.length; lessonNum++) {
             var lesson = day.lessons[lessonNum];
+            if (excludedSubjects.has(lesson.subject)) continue;
 
             var goodBuilding = String(lesson.building);
             if (goodBuilding.includes("null")) {
