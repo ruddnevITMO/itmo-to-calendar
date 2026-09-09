@@ -492,8 +492,11 @@
           var checkboxId = "subj-" + i;
           item.innerHTML =
             '<input type="checkbox" id="' + checkboxId + '" ' + (isExcluded ? "" : "checked") + " />" +
-            '<span class="subject-dot" style="background:' + subjectColor(subject) + '"></span>' +
-            '<label for="' + checkboxId + '">' + subject + "</label>";
+            '<span class="subject-dot" style="background:' + subjectColor(subject) + '"></span>';
+          var label = document.createElement("label");
+          label.setAttribute("for", checkboxId);
+          label.textContent = subject;
+          item.appendChild(label);
           var checkbox = item.querySelector("input");
           checkbox.addEventListener("change", function () {
             if (checkbox.checked) excludedSubjects.delete(subject);
@@ -622,7 +625,14 @@
 
         if (currentMethod == "auth") {
           fetchSchedule().then((data) => {
-            if (data) onScheduleLoaded(data);
+            if (!data) return;
+            try {
+              onScheduleLoaded(data);
+            } catch (error) {
+              onFailure();
+              document.getElementById("error-text").innerHTML = "Не удалось разобрать расписание: " + error.message;
+              document.getElementById("error-text").hidden = false;
+            }
           });
         } else if (currentMethod == "json") {
           try {
@@ -673,6 +683,7 @@
         var isLabImported = false;
         var isSportImported = false;
         var isOtherImported = false;
+        var importedCount = 0;
 
         data = data.data;
         if (data.length == 0) {
@@ -722,6 +733,7 @@
             const end = new Date(`${day.date}T${lesson.time_end}`);
 
             lesson.type = String(lesson.type);
+            importedCount++;
             if (importType == "single") {
               cal.addEvent(lesson.subject, description, lessonLocation, start, end);
             } else if (importType == "multiple") {
@@ -747,6 +759,13 @@
 
         function sleep(ms) {
           return new Promise((resolve) => setTimeout(resolve, ms));
+        }
+
+        if (importedCount == 0) {
+          onFailure();
+          document.getElementById("error-text").innerHTML = "Все занятия в выбранном диапазоне исключены фильтром предметов — нечего импортировать.";
+          document.getElementById("error-text").hidden = false;
+          return;
         }
 
         if (importType == "single") {
