@@ -502,8 +502,11 @@
           var checkboxId = "subj-" + i;
           item.innerHTML =
             '<input type="checkbox" id="' + checkboxId + '" ' + (isExcluded ? "" : "checked") + " />" +
-            '<span class="subject-dot" style="background:' + subjectColor(subject) + '"></span>' +
-            '<label for="' + checkboxId + '">' + subject + "</label>";
+            '<span class="subject-dot" style="background:' + subjectColor(subject) + '"></span>';
+          var label = document.createElement("label");
+          label.setAttribute("for", checkboxId);
+          label.textContent = subject;
+          item.appendChild(label);
           var checkbox = item.querySelector("input");
           checkbox.addEventListener("change", function () {
             if (checkbox.checked) excludedSubjects.delete(subject);
@@ -660,7 +663,18 @@
 
         if (currentMethod == "auth") {
           fetchSchedule().then(data => {
-            if (data) onScheduleLoaded(JSON.parse(data));
+            if (!data) return;
+            try {
+              onScheduleLoaded(JSON.parse(data));
+            } catch (error) {
+              overlay.hidden = true;
+              document.getElementById('progress-bar').hidden = true;
+              button.disabled = true;
+              button.style.backgroundColor = "red";
+              button.innerHTML = "Ошибка!";
+              document.getElementById('error-text').innerHTML = "Не удалось разобрать расписание: " + error.message;
+              document.getElementById('error-text').hidden = false;
+            }
           });
         } else if (currentMethod == "json") {
           try {
