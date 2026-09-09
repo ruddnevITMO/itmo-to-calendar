@@ -231,7 +231,7 @@
     }
 
     if (createdCount == 0) {
-      throw new Error("Нечего импортировать");
+      throw new Error("Нечего импортировать.");
     }
   }
 
