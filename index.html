@@ -435,6 +435,7 @@
       }
 
       function handleInputChange(event) {
+        if (event.target.closest && event.target.closest("#filter-panel")) return;
         if (event.target.tagName === "INPUT" || event.target.tagName === "TEXTAREA" || event.target.tagName === "SELECT") {
           returnToNormal();
         }
