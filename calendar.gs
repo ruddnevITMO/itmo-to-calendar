@@ -92,6 +92,7 @@
     }
 
     const today = new Date();
+    var createdCount = 0;
 
     for (var dayNum = 0; dayNum < data.length; dayNum++) {
       var day = data[dayNum];
@@ -123,6 +124,8 @@
 
       for (var lessonNum = 0; lessonNum < day.lessons.length; lessonNum++) {
         var lesson = day.lessons[lessonNum];
+        if (options.excludedSubjects && options.excludedSubjects.indexOf(lesson.subject) !== -1) continue;
+        createdCount++;
 
         var timeStartArray = lesson.time_start.split(":");
         var timeStart = new Date(day.date);
@@ -225,6 +228,10 @@
           }
         }
       }
+    }
+
+    if (createdCount == 0) {
+      throw new Error("Нечего импортировать.");
     }
   }
 
